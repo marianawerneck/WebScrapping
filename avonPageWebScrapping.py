@@ -5,19 +5,17 @@ import json
 #urllib2
 import requests as urllib2
 #specify the url
-avon = "https://www.avonstore.com.br/renew-genics-creme-dia-fps-25-30g-avon-avn2000/p"
+avon = "https://www.avonstore.com.br/api/catalog_system/pub/products/search/?fq=productId:20441"
 #query the website and return the html to the variable 'page'
 page = urllib2.get(avon)
 from bs4 import BeautifulSoup
-#parse and store in bs4 format
 
-patt = re.compile("var catalog\s+=\s+(\{.*?\});")
+#print(json.dumps(page.text, sort_keys=True, indent=4));
 
-
-
-soup = BeautifulSoup(page.content, 'html.parser')
-data2 = soup.find("script", text=re.compile("var catalog ="))
-avon_js = json.loads(patt.search(data2).group(1))
-print(avon_js)
-print(soup.prettify())
-
+data = (page.text).split(',')
+for i in data:
+    if '"Composição":[' in i:
+        copia = i[15:-3]
+copia = copia.split('; ')
+for i in copia:
+    print(i)
