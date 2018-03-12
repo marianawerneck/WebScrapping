@@ -56,9 +56,12 @@ def getComponentsAvon(data):
             return components;
 
 
+def printAll():
+    cursor.execute('SELECT * FROM products')
+    for l in cursor.fetchall():
+        print(l)
 
-insertProduct(data)
-    
+printAll()
     
 
 
