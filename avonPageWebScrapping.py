@@ -4,8 +4,8 @@ import json
 
 #urllib2
 import requests as urllib2
-#specify the url
-avon = "https://www.avonstore.com.br/api/catalog_system/pub/products/search/?fq=productId:"
+
+
 #query the website and return the html to the variable 'page'
 #page = urllib2.get(avon)
 from bs4 import BeautifulSoup
@@ -14,8 +14,6 @@ from bs4 import BeautifulSoup
 from dbConnection import *
 
 #print(json.dumps(page.text, sort_keys=True, indent=4));
-
-print("--------------------")
 
 def printComposition(jsonText):
     copia = ''
@@ -33,27 +31,79 @@ for i in range(20440,20450):
     
     printComposition(page.text)
 '''
-actualPage = avon + "20440"
-page = urllib2.get(actualPage)
-data = (page.text).split(',')
-def insertProduct(data):
+
+
+
+def populateDb():
+    for productId in range(3000,7000):
+        print(productId)
+        #specify the base url : wich is avon store
+        avon = "https://www.avonstore.com.br/api/catalog_system/pub/products/search/?fq=productId:"
+        #transform into a requests page
+        page = urllib2.get(avon + str(productId))
+        pageText = page.text
+        if(validatePageText(pageText)):
+            #insertIntoDbCosmetics
+            insertProduct(pageText,productId)
+
+def validatePageText(pageText):
+    if "[{" not in pageText:
+        return False
+    else:
+        return True
+    
+    
+def insertProduct(pageText,productId):
+    #transform the page into text, and then into an array 
+    data = (pageText).split(',')
     name = getNameAvon(data)
     brand = 'Avon'
     components = getComponentsAvon(data)
-    cursor.execute('INSERT INTO products (name,brand,components) VALUES (%s,%s,%s)',(name,brand,components))
+    categories = getCategories(pageText)
+    img = getImg(data)
+    link = getLink(data)
+    cursor.execute('INSERT INTO products (product_id,name,brand,components,categories,img,link) VALUES (%s,%s,%s,%s,%s,%s,%s)',(str(productId),name,brand,components,categories,img,link))
+    print("INSERT INTO succesful")
     connection.commit()
     
 def getNameAvon(data):
     for i in data:
         if '"productName"' in i:
             name = i[15:-1]
-            return name;
+            if(len(name)>10):
+                return name;
+            
+    return "no name"
 
 def getComponentsAvon(data):
     for i in data:
         if '"Composição":[' in i:
             components = i[15:-3]
-            return components;
+            if(len(components)>10):
+                return components;
+    return "no composition"
+
+def getCategories(pageText):
+    texto = pageText.split('},')
+    texto = texto[1]
+    texto = texto.split('[')
+    texto = texto[1].split(']')
+    texto = texto[0]
+    return texto
+
+def getImg(data):
+    for i in data:
+        if '"imageUrl":"' in i:
+            img = i[12:-1]
+            return img;
+    return "no image"
+
+def getLink(data):
+    for i in data:
+        if '"link":"' in i:
+            link = i[8:-1]
+            return link;
+    return "no link"
 
 
 def printAll():
@@ -61,8 +111,7 @@ def printAll():
     for l in cursor.fetchall():
         print(l)
 
-printAll()
-
+populateDb()
 connection.close()
     
 
