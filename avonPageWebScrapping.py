@@ -62,6 +62,8 @@ def printAll():
         print(l)
 
 printAll()
+
+connection.close()
     
 
 
