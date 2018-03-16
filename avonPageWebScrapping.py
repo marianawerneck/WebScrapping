@@ -35,7 +35,7 @@ for i in range(20440,20450):
 
 
 def populateDb():
-    for productId in range(7200,9000):
+    for productId in range(9000,9000):
         print(productId)
         #specify the base url : wich is avon store
         avon = "https://www.avonstore.com.br/api/catalog_system/pub/products/search/?fq=productId:"
