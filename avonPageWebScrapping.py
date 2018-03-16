@@ -35,7 +35,7 @@ for i in range(20440,20450):
 
 
 def populateDb():
-    for productId in range(4378,5000):
+    for productId in range(7200,9000):
         print(productId)
         #specify the base url : wich is avon store
         avon = "https://www.avonstore.com.br/api/catalog_system/pub/products/search/?fq=productId:"
@@ -84,9 +84,7 @@ def getComponentsAvon(data):
     return "no composition"
 
 def getCategories(pageText):
-    texto = pageText.split('},')
-    texto = texto[1]
-    texto = texto.split('[')
+    texto = pageText.split('categories')
     texto = texto[1].split(']')
     texto = texto[0]
     return texto
