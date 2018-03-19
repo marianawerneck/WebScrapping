@@ -34,8 +34,9 @@ for i in range(20440,20450):
 
 
 
+
 def populateDb():
-    for productId in range(9000,9000):
+    for productId in range(16715,20000):
         print(productId)
         #specify the base url : wich is avon store
         avon = "https://www.avonstore.com.br/api/catalog_system/pub/products/search/?fq=productId:"
@@ -70,7 +71,7 @@ def getNameAvon(data):
     for i in data:
         if '"productName"' in i:
             name = i[15:-1]
-            name = name.replace("\u2018","'").replace("\u2019","'")
+            name = name.replace("\u2018","'").replace("\u2019","'").replace("\u2013","-")
             return name;
             
     return "no name"
